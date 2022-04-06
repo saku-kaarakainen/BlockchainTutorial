@@ -47,12 +47,12 @@ public class Blockchain
     /// Creates a new transaction to go into the next mined Block
     /// </summary>
     /// <param name="sender">Address of the sender</param>
-    /// <param name="recipent">Address of the recipient</param>
+    /// <param name="recipient">Address of the recipient</param>
     /// <param name="amount">Amount</param>
     /// <returns> The index of the Block that will hold this transaction</returns>
-    public int NewTransaction(string sender, string recipent, decimal amount)
+    public int NewTransaction(string sender, string recipient, decimal amount)
     {
-        this.currentTransactions.Add(new(sender, recipent, amount));
+        this.currentTransactions.Add(new(sender, recipient, amount));
 
         if(!this.Chain.Any())
         {
@@ -68,4 +68,3 @@ public class Blockchain
     // Returns the last Block in the chain
     public Block LastBlock() => this.Chain.Last();
 }
-

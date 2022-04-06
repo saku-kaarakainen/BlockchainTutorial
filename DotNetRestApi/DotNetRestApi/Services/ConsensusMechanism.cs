@@ -1,9 +1,13 @@
-﻿namespace DotNetRestApi.Services;
+﻿using System.Diagnostics;
+
+namespace DotNetRestApi.Services;
 public class ConsensusMechanism
 {
-    public ConsensusMechanism()
-    {
+    private readonly Cryptograph cryptograph;
 
+    public ConsensusMechanism(Cryptograph cryptograph)
+    {
+        this.cryptograph = cryptograph;
     }
 
     /// <summary>
@@ -29,6 +33,7 @@ public class ConsensusMechanism
     /// <param name="lastProof">Previous Proof</param>
     /// <param name="proof">Current Proof</param
     /// <returns>True if correct, False if not.</returns>
+    [DebuggerStepThrough]
     private bool IsValidProof(int lastProof, int proof)
     {
         string guess = new System.Text
@@ -36,8 +41,10 @@ public class ConsensusMechanism
             .Append(proof)
             .ToString();
 
-        string hash = SHA256.CreateHash(rawData: guess);
-        bool isCorrect = hash.StartsWith("0000");
+        string hash = this.cryptograph.CreateHash(rawData: guess);
+        Debug.WriteLine($"Guess: {guess}, Hash: {hash}");
+
+        bool isCorrect = hash.StartsWith("00"); // 4 is too slow at devel
         return isCorrect;
     }
 }

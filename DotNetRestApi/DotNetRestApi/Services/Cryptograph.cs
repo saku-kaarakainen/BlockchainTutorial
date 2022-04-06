@@ -4,20 +4,20 @@ using _SHA256 = System.Security.Cryptography.SHA256;
 
 namespace DotNetRestApi.Services;
 
-public class SHA256
+public class Cryptograph
 {
-    public SHA256()
+    public Cryptograph()
     {
 
     }
 
-    public static string CreateHash(object @object)
+    public string CreateHash(object @object)
     {
         var json = JsonConvert.SerializeObject(@object);
         return CreateHash(rawData: json);
     }
 
-    public static string CreateHash(string rawData)
+    public string CreateHash(string rawData)
     {
         // Create a SHA256   
         // TODO: Could we put this into the pipeline?
@@ -25,9 +25,8 @@ public class SHA256
         
         // ComputeHash - returns byte array  
         return new StringBuilder()
-            .AppendJoin(Environment.NewLine, 
-                sha256Hash
-                    .ComputeHash(Encoding.UTF8.GetBytes(rawData))
+            .AppendJoin("", sha256Hash
+                .ComputeHash(Encoding.UTF8.GetBytes(rawData))
                     .Select(x => x.ToString("x2")))
             .ToString();        
     }

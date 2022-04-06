@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddTransient<SHA256>();
+builder.Services.AddTransient<Cryptograph>();
 builder.Services.AddTransient<ConsensusMechanism>();
 builder.Services.AddSingleton<Blockchain>();
 builder.Services.AddSingleton<Node>();
