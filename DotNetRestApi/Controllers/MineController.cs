@@ -9,53 +9,24 @@ public class MineController : ControllerBase
 {
     private readonly Blockchain blockchain;
     private readonly ConsensusMechanism consensusMechanism;
-    private readonly Node node;
+    private readonly Nodes nodes;
     private readonly Cryptograph cryptograph;
 
     public MineController(
         Blockchain blockchain,
         ConsensusMechanism consensusMechanism,
-        Node node,
+        Nodes nodes,
         Cryptograph cryptograph)
     {
         this.blockchain = blockchain;
         this.consensusMechanism = consensusMechanism;
-        this.node = node;
+        this.nodes = nodes;
         this.cryptograph = cryptograph;
-    }
-
-    private async Task<Block> ForgeGenesisBlock()
-    {
-        int proof = await Task.Run(() => this.consensusMechanism.ProofOfWork(0));
-
-        // We must receive a reward for finding the proof.
-        // The sender is "0" to signify that this node has mined a new coin.
-        this.blockchain.NewTransaction(
-            sender: "0",
-            recipient: node.GloballyUniqueAddress,
-            amount: 1 // One btc, or whatever will be our currency
-        );
-
-        Block block = this.blockchain.NewBlock(proof, null);
-        return block;
     }
 
     [HttpGet()]
     public async Task<IActionResult> Get()
     {
-        // We run the proof of work algorithm to get the next proof...
-        if(!this.blockchain.Chain.Any())
-        {
-            Block genesis = await ForgeGenesisBlock();
-            return Ok(new MineModel(
-                "Gensis Block forged", 
-                genesis.Index, 
-                genesis.Transactions, 
-                genesis.Proof, 
-                genesis.PreviousHash ?? ""
-            ));
-        }
-
         Block lastBlock = this.blockchain.LastBlock();
         int lastProof = lastBlock.Proof;
         int proof = await Task.Run(() => this.consensusMechanism.ProofOfWork(lastProof));
@@ -64,7 +35,7 @@ public class MineController : ControllerBase
         // The sender is "0" to signify that this node has mined a new coin.
         this.blockchain.NewTransaction(
             sender: "0",
-            recipient: node.GloballyUniqueAddress,
+            recipient: nodes.LocalNodeGuid,
             amount: 1 // One btc, or whatever will be our currency
         );
 

@@ -44,7 +44,7 @@ public class ConsensusMechanism
         string hash = this.cryptograph.CreateHash(rawData: guess);
         Debug.WriteLine($"Guess: {guess}, Hash: {hash}");
 
-        bool isCorrect = hash.StartsWith("00"); // 4 is too slow at devel
+        bool isCorrect = hash.StartsWith("00"); // 4 is too slow at develv
         return isCorrect;
     }
 }

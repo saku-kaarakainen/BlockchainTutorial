@@ -15,9 +15,12 @@ public class Blockchain
         this.clock = clock;
         Chain = new ();
         currentTransactions = new();
+
+        // Create Genesis block
+        this.NewBlock(proof: 1, previousHash: "1");
     }
 
-    public List<Block> Chain { get; }
+    public List<Block> Chain { get; set; }
 
     /// <summary>
     /// Creates a new Block in the Blockchain

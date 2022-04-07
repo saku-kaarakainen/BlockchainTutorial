@@ -5,11 +5,12 @@ using Microsoft.Extensions.Internal;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<Nodes>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient<Cryptograph>();
 builder.Services.AddTransient<ConsensusMechanism>();
 builder.Services.AddSingleton<Blockchain>();
-builder.Services.AddSingleton<Node>();
 builder.Services.AddSingleton<ISystemClock, SystemClock>();
 
 builder.Services.AddControllers();
