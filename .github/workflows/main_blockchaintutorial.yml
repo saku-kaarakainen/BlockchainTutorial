@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'blockchaintutorial'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DCB1DFE6DCA945218FF13091AB09B38A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3BF1540991604015849674CAF55E263F }}
           package: .
