@@ -1,5 +1,5 @@
-﻿namespace DotNetRestApi.Models;
-
+﻿using Newtonsoft.Json;
+namespace DotNetRestApi.Models;
 
 public record Transaction(
     string Sender,
@@ -11,5 +11,6 @@ public record Block(
     DateTimeOffset Timestamp,
     List<Transaction> Transactions,
     int Proof,
-    string? PreviousHash = null
-);
+    string? PreviousHash = null) { 
+    public string ToJson(Formatting formatting = Formatting.Indented) => JsonConvert.SerializeObject(this, formatting);    
+}

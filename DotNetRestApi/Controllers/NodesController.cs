@@ -8,10 +8,15 @@ namespace DotNetRestApi.Controllers;
 [Route("[controller]")]
 public class NodesController : ControllerBase
 {
+    private readonly IHttpContextAccessor httpContextAccessor;
     private readonly Blockchain blockchain;
     private readonly Nodes _nodes;
-    public NodesController(Blockchain blockchain, Nodes nodes)
+    public NodesController(
+        IHttpContextAccessor httpContextAccessor,
+        Blockchain blockchain, 
+        Nodes nodes)
     {
+        this.httpContextAccessor = httpContextAccessor;
         this.blockchain = blockchain;
         this._nodes = nodes;
     }
@@ -19,18 +24,24 @@ public class NodesController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register(List<string> nodes)
     {
-        foreach(string node in nodes)
+        bool nodesAdded = false;
+        foreach (string node in nodes)
         {
-            this._nodes.RegisterNode(node);
+            if (this._nodes.RegisterNode(node))
+            {
+                nodesAdded = true;
+            }
         }
 
-        return StatusCode(201, new RegisterNodeModel("New nodes have been added", this._nodes.RegisteredNodes.Count));
+        return nodesAdded
+            ? StatusCode(201, new RegisterNodeModel("New nodes have been added in the request.", this._nodes.NodesCount))
+            : StatusCode(200, new RegisterNodeModel("No new nodes in the request.", this._nodes.NodesCount));
     }
 
     [HttpGet("resolve")]
-    public IActionResult Resolve()
+    public async Task<IActionResult> Resolve()
     {
-        bool isReplaced = this._nodes.ResolveConflicts();
+        bool isReplaced = await this._nodes.ResolveConflicts();
 
         if(isReplaced)
         {

@@ -5,38 +5,50 @@ using System.Net;
 
 namespace DotNetRestApi.Services;
 public class Nodes
-{
+{    
+    private readonly Blockchain blockchain;
+    private readonly Cryptograph cryptograph;
+    private readonly HttpClient httpClient;
+    private List<string> neighbours;
+
     public string LocalNodeGuid { get; }
     public IPAddress LocalIpAddress { get; }
 
-    public List<string> Neighbours { get; }
-
-    private readonly Blockchain blockchain;
-    private readonly HttpClient httpClient;
 
     public Nodes(
-        IHttpContextAccessor httpContextAccessor,
+        //IHttpContextAccessor httpContextAccessor,
         HttpClient httpClient,
-        Blockchain blockchain)
+        Blockchain blockchain,
+        Cryptograph cryptograph)
     {
         this.httpClient = httpClient;
         this.blockchain = blockchain;
+        this.cryptograph = cryptograph;
 
         // Generate a globally unique address for this node
         LocalNodeGuid = Guid.NewGuid()
             .ToString()
             .Replace("-", "");
 
-        HttpContext httpContext = httpContextAccessor?.HttpContext ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-        IHttpConnectionFeature httpConnectionFeature = httpContext.Features.Get<IHttpConnectionFeature>()!;
-        LocalIpAddress = httpConnectionFeature?.LocalIpAddress ?? throw new InvalidOperationException("Unable to set the note.");
-        Neighbours = new();
+        //HttpContext httpContext = httpContextAccessor?.HttpContext ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        //IHttpConnectionFeature httpConnectionFeature = httpContext.Features.Get<IHttpConnectionFeature>()!;
+        //LocalIpAddress = httpConnectionFeature?.LocalIpAddress ?? throw new InvalidOperationException("Unable to set the note.");
+        neighbours = new();
     }
 
-    public void RegisterNode(string ipAddress)
+    public bool RegisterNode(string ipAddress)
     {
-        this.Neighbours.Add(ipAddress);
+        if(this.neighbours.Contains(ipAddress))
+        {
+            Debug.Print($"The node '{ipAddress}' is already added");
+            return false;
+        }
+
+        this.neighbours.Add(ipAddress);
+        return true;
     }
+
+    public int NodesCount => neighbours.Count;
 
     /// <summary>
     /// This is our Consensus Algorithm, 
@@ -50,25 +62,28 @@ public class Nodes
         // We're only looking for chains longer than ours
         int maxLength = this.blockchain.Chain.Count;
 
-        foreach(string node in Neighbours)
+        foreach(string node in neighbours)
         {
-            HttpResponseMessage response = await this.httpClient.GetAsync($"https://{node}/chain");
-            if(!response.IsSuccessStatusCode)
+            HttpResponseMessage response = await this.httpClient.GetAsync($"https://{node}/Chain");
+            if (!response.IsSuccessStatusCode)
             {
-                Debug.Print("Registered faulty node at: " + node);
-                continue;
+                Debug.Print("Cannot fetch chain data from node: " + node);
+                return default;
             }
 
             string content = await response.Content.ReadAsStringAsync();
             ChainModel model = Newtonsoft.Json.JsonConvert.DeserializeObject<ChainModel>(content)!;
 
             // Check if the length is longer and the chain is valid
-            if(model.Length > maxLength && IsValidChain(model.Chain))
+            if (model.Length > maxLength)
             {
-                maxLength = model.Length;
-                this.blockchain.Chain = model.Chain;
-                replaced = true;
-                Debug.Print("Our chain was replaced with the chain from: " + node);
+                if (IsValidChain(model.Chain))
+                {
+                    maxLength = model.Length;
+                    this.blockchain.Chain = model.Chain;
+                    replaced = true;
+                    Debug.Print("Our chain was replaced with the chain from: " + node);
+                }
             }
         }
 
@@ -82,29 +97,34 @@ public class Nodes
     /// <returns>True if valid, False if not</returns>
     public bool IsValidChain(List<Block> chain)
     {
-        /*
-        last_block = chain[0]
-        current_index = 1
+        if (!chain.Any())
+            return true; // empty is valid
 
-        while current_index < len(chain):
-            block = chain[current_index]
-            print(f'{last_block}')
-            print(f'{block}')
-            print("\n-----------\n")
-            # Check that the hash of the block is correct
-            if block['previous_hash'] != self.hash(last_block):
-                return False
+        Block block;
+        Block lastBlock = chain.First();
+        string lastBlockHash = cryptograph.CreateHash(lastBlock);
+        Debug.Print("Last block hash: " + lastBlockHash);
+        Debug.Print("Last block: " + lastBlock.ToJson());
 
-            # Check that the Proof of Work is correct
-            if not self.valid_proof(last_block['proof'], block['proof']):
-                return False
+        int currentIndex = 1;
 
-            last_block = block
-            current_index += 1
+        while(currentIndex < chain.Count)
+        {
+            block = chain.ElementAt(currentIndex);
+            Debug.Print($"block at current index ({currentIndex}): " + block.ToJson());
 
-        return True
-         */
-        throw new NotFiniteNumberException();
+            // Check that the hash of the block is correct
+            if (block.PreviousHash != cryptograph.CreateHash(lastBlock))
+            {
+                Debug.Print("Previous hash doesn't match up with the last block hash. Returing false.");
+                return false;
+            }
+
+            lastBlock = block;
+            currentIndex++;
+        }
+
+        return true;
     }
 }
 

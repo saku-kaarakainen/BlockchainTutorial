@@ -1,12 +1,13 @@
 using DotNetRestApi;
 using DotNetRestApi.Services;
 using Microsoft.Extensions.Internal;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient<Nodes>();
+builder.Services.AddSingleton<Nodes>().AddHttpClient();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddTransient<Cryptograph>();
 builder.Services.AddTransient<ConsensusMechanism>();
