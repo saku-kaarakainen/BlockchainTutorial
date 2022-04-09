@@ -2,9 +2,11 @@ using DotNetRestApi.Models;
 using DotNetRestApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DotNetRestApi.Controllers;
+namespace DotNetRestApi.Controllers.v1;
+
+[ApiVersion("1")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-[Route("[controller]")]
 public class MineController : ControllerBase
 {
     private readonly Blockchain blockchain;
