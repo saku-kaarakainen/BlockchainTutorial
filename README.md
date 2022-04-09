@@ -4,4 +4,8 @@ In my case my "native" language is C# with .NET Core Web API dialect, hence I'm 
 
 :)
 
-There is some kind of deployed version hosted at azure https://blockchaintutorial-apim.azure-api.net/swagger/index.html
+I've hosted the app in azure, it's poorly misconfigured, so the api documentation can be found from:
+https://blockchaintutorial-apim.azure-api.net/api/v1/swagger/index.html
+
+But for example a correct endpoint is found at
+https://blockchaintutorial-apim.azure-api.net/api/v1/api/v1/Chain
