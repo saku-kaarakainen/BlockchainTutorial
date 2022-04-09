@@ -4,4 +4,4 @@ In my case my "native" language is C# with .NET Core Web API dialect, hence I'm 
 
 :)
 
-For  .NET project I've generated the documentation in the swaggerhub at https://app.swaggerhub.com/apis-docs/saku-kaarakainen/BlockchainTutorial/v1#/.
+There is some kind of deployed version hosted at azure https://blockchaintutorial-apim.azure-api.net/swagger/index.html
