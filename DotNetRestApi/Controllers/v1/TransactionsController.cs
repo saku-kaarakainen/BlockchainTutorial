@@ -17,6 +17,15 @@ public class TransactionsController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Adds new transaction.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="recipient"></param>
+    /// <param name="amount"></param>
+    /// <remarks>
+    /// Notes: This service doesn't have any security, so you can easily fake a transaction.
+    /// </remarks>
     [HttpPost("New")]
     public IActionResult New(string sender, string recipient, decimal amount)
     {

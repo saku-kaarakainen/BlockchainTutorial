@@ -55,16 +55,17 @@ public class Nodes
     /// it resolves conflicts by replacing our chain with the longest one in the network.
     /// </summary>
     /// <returns>True if our chain was replaced, False if not</returns>
-    public async Task<bool> ResolveConflicts()
+    public async Task<(bool replaced, string replacingNode)> ResolveConflicts()
     {
         bool replaced = false;
+        string replacingNode = "https://127.0.0.1";
 
         // We're only looking for chains longer than ours
         int maxLength = this.blockchain.Chain.Count;
 
         foreach(string node in neighbours)
         {
-            HttpResponseMessage response = await this.httpClient.GetAsync($"https://{node}/Chain");
+            HttpResponseMessage response = await this.httpClient.GetAsync($"{node}/Chain");
             if (!response.IsSuccessStatusCode)
             {
                 Debug.Print("Cannot fetch chain data from node: " + node);
@@ -82,12 +83,13 @@ public class Nodes
                     maxLength = model.Length;
                     this.blockchain.Chain = model.Chain;
                     replaced = true;
+                    replacingNode = node;
                     Debug.Print("Our chain was replaced with the chain from: " + node);
                 }
             }
         }
 
-        return replaced;
+        return (replaced, replacingNode);
     }
 
     /// <summary>

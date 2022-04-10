@@ -34,13 +34,17 @@ builder.Services.AddVersionedApiExplorer(options =>
 builder.Services.AddSwaggerGen(swaggerGenOptions =>
 {
     // Needs to be included from the project properties
-    //string xmlDocDirectory = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-    //swaggerGenOptions.IncludeXmlComments(xmlDocDirectory);
+    string xmlDocDirectory = Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+    if (File.Exists(xmlDocDirectory))
+    {
+        swaggerGenOptions.IncludeXmlComments(xmlDocDirectory);
+    }
 
     swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo 
     { 
         Title = "My Blockchain REST API v1",
-        Description = "My attempt to make my first blockchain network",
+        Description = "My attempt to make my first blockchain network. You can read more "
+        + "[from the project's readme file](https://github.com/saku-kaarakainen/BlockchainTutorial/tree/main/DotNetRestApi#readme)",        
         Version = "v1",
         Contact = new OpenApiContact
         {

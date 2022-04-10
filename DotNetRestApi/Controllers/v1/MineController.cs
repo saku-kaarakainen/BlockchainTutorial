@@ -26,6 +26,12 @@ public class MineController : ControllerBase
         this.cryptograph = cryptograph;
     }
 
+    /// <summary>
+    /// Mine a new block with Proof of Work. 
+    /// The difficulty is purposely set to really easy, 
+    /// just that you can see how it works.
+    /// </summary>
+    /// <returns></returns>
     [HttpGet()]
     public async Task<IActionResult> Get()
     {

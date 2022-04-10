@@ -1,17 +1,31 @@
 # What is this project?
-When learning a language, first thing you do is to translate the target language in your native language.
-In my case my "native" language is C# with .NET Core Web API dialect, hence I'm "translating" the ideas of the tutorial into my "native" language
-
-:)
-
+I guess I would say this is my proof that I know, atleast the very basics of a blockchain architecture.
+This is just a proof of concept. There would be lot's of things to make it proper one.
 
 # How to use this
-I just started this, in order to learn blockchain technology, so there's not much here.
+You can read the swagger API documentation in order to the endpoint's function.
 
-So far with this app, you can:
- - Build it (using Visual Studio)
- - It creates a single node, that doesn't connect other nodes yet.
-   - Hence if you run it, it will be empty at first and the data will disappear once you shut the app down. 
- - Save transaction into a new block
- - Mine a block
- - Get the full chain with the saved transaction  
+## Basics
+1. Add new transactions. When you add a transaction, it will be added the next mined block. 
+So you won't see your transaction on chain until it's mined. 
+As you can also see, it doesn't have any security features. A proper blockchain would have public/private key and an enpoint to verify the transactions.
+
+2. Mine blocks. The mining is done manually. 
+A real version could do it automatically, for example every 10 minutes.
+
+3. Get on chain data. - I guess you could call this the public ledger.
+
+4. Node functions - With these endpoints you can add your node in the network.
+
+
+# TODO-list
+If I ever go back to develop this, I would implement following things:
+ - Security: Increase the mining difficulty. Bitcoin does it automatically, it increases it every 2016 block.
+ - Security: Create more nodes, you can do 51% attack really easy on this implementation:
+     Just make bigger chain mine, and then register it to the network.
+ - Automate network synchronization
+ - Coinbase: A personal wallet. 
+ It should have the public key and the private key, like a proper crypto wallet does.
+ - Client app: The app which you could use to send the transactions
+ - Smart contracts: Bitcoin doesn't have those, but ethereum does.
+ - And much more...

@@ -22,6 +22,11 @@ public class NodesController : ControllerBase
         this._nodes = nodes;
     }
 
+    /// <summary>
+    /// Registers new chains in the node.
+    /// </summary>
+    /// <param name="nodes">A list of url of the nodes. Example format: <code>['https://https://blockchaintutorial-apim.azure-api.net/v1', 'myNode', 'myAnotherNode']</code></param>
+    /// <returns></returns>
     [HttpPost("register")]
     public IActionResult Register(List<string> nodes)
     {
@@ -39,15 +44,19 @@ public class NodesController : ControllerBase
             : StatusCode(200, new RegisterNodeModel("No new nodes in the request.", this._nodes.NodesCount));
     }
 
+    /// <summary>
+    /// Resolves this node. If the registered node has a longer chain, it wil be used.
+    /// </summary>
+    /// <returns>Message and the chain in used in the node.</returns>
     [HttpGet("resolve")]
     public async Task<IActionResult> Resolve()
     {
-        bool isReplaced = await this._nodes.ResolveConflicts();
+        (bool isReplaced, string replacingNode) = await this._nodes.ResolveConflicts();
 
         if(isReplaced)
         {
             return Ok(new ResolveNewNodeModel(
-                Message: "Our chain was replaced",
+                Message: $"Our chain was replaced from the node '{replacingNode}'",
                 NewChain: this.blockchain.Chain
             ));
         }
